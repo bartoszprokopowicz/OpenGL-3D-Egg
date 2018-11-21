@@ -61,6 +61,7 @@ void Egg::draw(int model)
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
 
 				// Drugi trójk¹t
+				
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
 				glVertex3f(parametricTable[u][_v].x, parametricTable[u][_v].y, parametricTable[u][_v].z);
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
@@ -69,19 +70,29 @@ void Egg::draw(int model)
 		glEnd();
 		break;
 	case 3:
-		glBegin(GL_POLYGON);
+		glBegin(GL_TRIANGLES);
 		for (int u = 0; u < density; u++) {
 			float _u = (u + 1) % density;
 			for (int v = 0; v < density; v++) {
 				float _v = (v + 1) % density;
 				// Pierwszy trójk¹t
+				glColor3f(parametricTable[u][v].r, parametricTable[u][v].g, parametricTable[u][v].b);
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
+
+				glColor3f(parametricTable[_u][v].r, parametricTable[_u][v].g, parametricTable[_u][v].b);
 				glVertex3f(parametricTable[_u][v].x, parametricTable[_u][v].y, parametricTable[_u][v].z);
+
+				glColor3f(parametricTable[_u][_v].r, parametricTable[_u][_v].g, parametricTable[_u][_v].b);
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
 
 				// Drugi trójk¹t
+				glColor3f(parametricTable[_u][_v].r, parametricTable[_u][_v].g, parametricTable[_u][_v].b);
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
+
+				glColor3f(parametricTable[u][_v].r, parametricTable[u][_v].g, parametricTable[u][_v].b);
 				glVertex3f(parametricTable[u][_v].x, parametricTable[u][_v].y, parametricTable[u][_v].z);
+
+				glColor3f(parametricTable[u][v].r, parametricTable[u][v].g, parametricTable[u][v].b);
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
 			}
 		}

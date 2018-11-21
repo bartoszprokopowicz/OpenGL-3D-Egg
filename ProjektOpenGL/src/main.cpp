@@ -23,7 +23,7 @@ typedef float point3[3];
 
 // Funkcja rysuj¹ca osie uk³adu wspó³rzêdnych
 
-Egg egg(40);
+Egg egg(10);
 
 int model = 1;
 

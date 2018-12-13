@@ -12,6 +12,7 @@
 #include <math.h>
 #include <iostream>
 #include <time.h>
+#include "Camera.h"
 #include "Egg.h"
 #include "coords.h"
 
@@ -23,15 +24,15 @@ typedef float point3[3];
 
 // Funkcja rysuj¹ca osie uk³adu wspó³rzêdnych
 
-Egg egg(40);
+Egg egg(50);
 
 int model = 1;
 
 int WIDTH = 600, HEIGHT = 600;
 
-int start_timer = time(NULL), now_timer = 0, frame_count = 0;
+Camera camera;
 
-static GLfloat theta[] = { 0.0, 0.0, 0.0 }; // trzy k¹ty obrotu
+int mouseButton;
 
 
 
@@ -92,13 +93,7 @@ void RenderScene(void)
 	glLoadIdentity();
 	// Czyszczenie macierzy bie¿¹cej
 
-	glRotatef(theta[0], 1.0, 0.0, 0.0);
-
-	glRotatef(theta[1], 0.0, 1.0, 0.0);
-
-	glRotatef(theta[2], 0.0, 0.0, 1.0);
-
-
+	camera.Refresh(mouseButton);
 	// Narysowanie osi przy pomocy funkcji zdefiniowanej ni¿ej
 	Axes();
 	//Obni¿enie obiektów o 5 punktów 
@@ -112,13 +107,6 @@ void RenderScene(void)
 
 	glutSwapBuffers();
 	// Iloœæ FPS
-	frame_count++;
-	now_timer = time(NULL);
-	if (now_timer - start_timer > 0) {
-		std::cout << "FPS: " << frame_count / (now_timer - start_timer) << std::endl;
-		frame_count = 0;
-		start_timer = now_timer;
-	}
 }
 
 /*************************************************************************************/
@@ -130,8 +118,96 @@ void RenderScene(void)
 void MyInit(void)
 {
 	egg.generateCloud();
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// Kolor czyszc¹cy (wype³nienia okna) ustawiono na czarny
+	/*************************************************************************************/
+
+//  Definicja materia³u z jakiego zrobiony jest czajnik
+//  i definicja Ÿród³a œwiat³a
+
+/*************************************************************************************/
+
+
+/*************************************************************************************/
+// Definicja materia³u z jakiego zrobiony jest czajnik
+
+	GLfloat mat_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+	// wspó³czynniki ka =[kar,kag,kab] dla œwiat³a otoczenia
+
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	// wspó³czynniki kd =[kdr,kdg,kdb] œwiat³a rozproszonego
+
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	// wspó³czynniki ks =[ksr,ksg,ksb] dla œwiat³a odbitego               
+
+	GLfloat mat_shininess = { 20.0 };
+	// wspó³czynnik n opisuj¹cy po³ysk powierzchni
+
+/*************************************************************************************/
+// Definicja Ÿród³a œwiat³a
+
+	GLfloat light_position[] = { 0.0, 0.0, 10.0, 1.0 };
+	// po³o¿enie Ÿród³a
+
+
+	GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
+	// sk³adowe intensywnoœci œwiecenia Ÿród³a œwiat³a otoczenia
+	// Ia = [Iar,Iag,Iab]
+
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	// sk³adowe intensywnoœci œwiecenia Ÿród³a œwiat³a powoduj¹cego
+	// odbicie dyfuzyjne Id = [Idr,Idg,Idb]
+
+	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	// sk³adowe intensywnoœci œwiecenia Ÿród³a œwiat³a powoduj¹cego
+	// odbicie kierunkowe Is = [Isr,Isg,Isb]
+
+	GLfloat att_constant = { 1.0 };
+	// sk³adowa sta³a ds dla modelu zmian oœwietlenia w funkcji
+	// odleg³oœci od Ÿród³a
+
+	GLfloat att_linear = { 0.05 };
+	// sk³adowa liniowa dl dla modelu zmian oœwietlenia w funkcji
+	// odleg³oœci od Ÿród³a
+
+	GLfloat att_quadratic = { 0.001 };
+	// sk³adowa kwadratowa dq dla modelu zmian oœwietlenia w funkcji
+	// odleg³oœci od Ÿród³a
+
+/*************************************************************************************/
+// Ustawienie parametrów materia³u i Ÿród³a œwiat³a
+
+/*************************************************************************************/
+// Ustawienie patrametrów materia³u
+
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+
+	/*************************************************************************************/
+	// Ustawienie parametrów Ÿród³a
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, att_constant);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, att_linear);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, att_quadratic);
+
+
+	/*************************************************************************************/
+	// Ustawienie opcji systemu oœwietlania sceny
+
+	glShadeModel(GL_SMOOTH); // w³aczenie ³agodnego cieniowania
+	glEnable(GL_LIGHTING);   // w³aczenie systemu oœwietlenia sceny
+	glEnable(GL_LIGHT0);     // w³¹czenie Ÿród³a o numerze 0
+	glEnable(GL_DEPTH_TEST); // w³¹czenie mechanizmu z-bufora
+
+/*************************************************************************************/
 
 }
 
@@ -146,50 +222,27 @@ void MyInit(void)
 
 void ChangeSize(GLsizei horizontal, GLsizei vertical)
 {
+	// Przeliczenie zmiany iloœci pikseli w ruchu myszy na stopnie
+	camera.Pix2Angle(360.0 / (float)horizontal, 360.0 / (float)vertical);
 
-	GLfloat AspectRatio;
-	// Deklaracja zmiennej AspectRatio  okreœlaj¹cej proporcjê
-	// wymiarów okna 
+	// Przejœcie w tryb projekcji
+	glMatrixMode(GL_PROJECTION);
 
-	if (vertical == 0)  // Zabezpieczenie przed dzieleniem przez 0
+	// Czyszczenie macierzy bie¿¹cej
+	glLoadIdentity();
 
-		vertical = 1;
-	
-	WIDTH = horizontal;
-	HEIGHT = vertical;
+	GLfloat aspectRatio = (GLfloat)horizontal / (GLfloat)vertical;
+
+	// Ustawienie parametrów dla rzutu perspektywicznego
+	gluPerspective(70, aspectRatio, 1.0, 3000.0);
 
 	glViewport(0, 0, horizontal, vertical);
-	// Ustawienie wielkoœciokna okna widoku (viewport)
-	// W tym przypadku od (0,0) do (horizontal, vertical)  
 
-	glMatrixMode(GL_PROJECTION);
-	// Prze³¹czenie macierzy bie¿¹cej na macierz projekcji 
-
-	glLoadIdentity();
-	// Czyszcznie macierzy bie¿¹cej            
-
-	AspectRatio = (GLfloat)horizontal / (GLfloat)vertical;
-	// Wyznaczenie wspó³czynnika  proporcji okna
-	// Gdy okno nie jest kwadratem wymagane jest okreœlenie tak zwanej
-	// przestrzeni ograniczaj¹cej pozwalaj¹cej zachowaæ w³aœciwe
-	// proporcje rysowanego obiektu.
-	// Do okreslenia przestrzeni ograniczj¹cej s³u¿y funkcja
-	// glOrtho(...)            
-
-	if (horizontal <= vertical)
-
-		glOrtho(-7.5, 7.5, -7.5 / AspectRatio, 7.5 / AspectRatio, 10.0, -10.0);
-
-	else
-
-		glOrtho(-7.5*AspectRatio, 7.5*AspectRatio, -7.5, 7.5, 10.0, -10.0);
-
+	// Powrót do trybu modelu
 	glMatrixMode(GL_MODELVIEW);
-	// Prze³¹czenie macierzy bie¿¹cej na macierz widoku modelu                                    
 
+	// Czyszczenie macierzy bie¿¹cej
 	glLoadIdentity();
-	// Czyszcenie macierzy bie¿¹cej
-
 }
 
 /*************************************************************************************/
@@ -205,23 +258,33 @@ void keys(unsigned char key, int x, int y)
 	RenderScene(); // przerysowanie obrazu sceny
 }
 
-
-void spinEgg(int)
+void MouseButtonState(int btn, int state, int x, int y)
 {
-
-	theta[0] -= 0.5;
-	if (theta[0] > 360.0) theta[0] -= 360.0;
-
-	theta[1] -= 0.5;
-	if (theta[1] > 360.0) theta[1] -= 360.0;
-
-	theta[2] -= 0.5;
-	if (theta[2] > 360.0) theta[2] -= 360.0;
-
-	glutTimerFunc(1000 / FPS, spinEgg, 0);
-
-	glutPostRedisplay(); //odœwie¿enie zawartoœci aktualnego okna
+	// Zmiana stanu zmiennej okreslaj¹cej naciœniêcie guzika
+	if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		camera.setMousePosition(x, y);
+		mouseButton = 1;
+	}
+	else if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+	{
+		camera.setRadius(y);
+		mouseButton = 2;
+	}
+	else
+	{
+		mouseButton = 0;
+	}
 }
+
+void MousePosition(GLsizei x, GLsizei y)
+{
+	camera.calculatePosition(x, y);
+	camera.calculateRadius(y);
+	glutPostRedisplay();
+}
+
+
 
 
 
@@ -242,11 +305,9 @@ void main(void)
 	// Dla aktualnego okna ustala funkcjê zwrotn¹ odpowiedzialn¹
 	// zazmiany rozmiaru okna      
 
+	glutMouseFunc(MouseButtonState);
 	glutKeyboardFunc(keys);
-
-	//glutIdleFunc(spinEgg);
-
-	glutTimerFunc(1000/FPS, spinEgg, 0);
+	glutMotionFunc(MousePosition);
 
 	MyInit();
 	// Funkcja MyInit() (zdefiniowana powy¿ej) wykonuje wszelkie

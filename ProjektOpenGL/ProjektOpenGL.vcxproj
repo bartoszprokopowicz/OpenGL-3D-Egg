@@ -131,10 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\OpenGL-3D-Planetary-System\OpenGL-3D-Planetary-System\ProjektOpenGL\src\Camera.cpp" />
     <ClCompile Include="src\Egg.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\OpenGL-3D-Planetary-System\OpenGL-3D-Planetary-System\ProjektOpenGL\src\Camera.h" />
     <ClInclude Include="src\Egg.h" />
     <ClInclude Include="src\coords.h" />
   </ItemGroup>

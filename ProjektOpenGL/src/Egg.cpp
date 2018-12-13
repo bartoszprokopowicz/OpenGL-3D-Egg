@@ -28,9 +28,9 @@ void Egg::generateCloud()
 			parametricTable[u][v].y = (160 * pow(_u, 4)) - (320 * pow(_u, 3)) + (160 * pow(_u, 2));
 			parametricTable[u][v].z = ((-90 * pow(_u, 5)) + (225 * pow(_u, 4)) - (270 * pow(_u, 3)) + (180 * pow(_u, 2)) - (45 * _u)) * (sin(M_PI * _v));
 			//Generowanie losowych kolorów
-			parametricTable[u][v].r = randFloat();
-			parametricTable[u][v].g = randFloat();
-			parametricTable[u][v].b = randFloat();
+			parametricTable[u][v].r = 1.0f;
+			parametricTable[u][v].g = 1.0f;
+			parametricTable[u][v].b = 1.0f;
 		}
 	}
 }
@@ -42,7 +42,7 @@ void Egg::draw(int model)
 		glBegin(GL_POINTS);
 		for (int u = 0; u < density; u++) {
 			for (int v = 0; v < density; v++) {
-				glColor3f(0.0f, 0.0f, 0.0f);
+				glColor3f(1.0f, 1.0f, 1.0f);
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
 			}
 		}
@@ -54,14 +54,13 @@ void Egg::draw(int model)
 			float _u = (u + 1) % density;
 			for (int v = 0; v < density; v++) {
 				float _v = (v + 1) % density;
-				glColor3f(0.0f, 0.0f, 0.0f);
+				glColor3f(1.0f, 1.0f, 1.0f);
 				// Pierwszy trójk¹t
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
 				glVertex3f(parametricTable[_u][v].x, parametricTable[_u][v].y, parametricTable[_u][v].z);
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
 
-				// Drugi trójk¹t
-				
+				// Drugi trójk¹t	
 				glVertex3f(parametricTable[_u][_v].x, parametricTable[_u][_v].y, parametricTable[_u][_v].z);
 				glVertex3f(parametricTable[u][_v].x, parametricTable[u][_v].y, parametricTable[u][_v].z);
 				glVertex3f(parametricTable[u][v].x, parametricTable[u][v].y, parametricTable[u][v].z);
